@@ -4,6 +4,8 @@ Private Pub is a Ruby gem for use with Rails to publish and subscribe to message
 
 Watch [RailsCasts Episode 316](http://railscasts.com/episodes/316-private-pub) for a demonstration of Private Pub.
 
+This version has fully rewritten CoffeeScript version of asset.
+
 
 ## Setup
 
@@ -144,12 +146,10 @@ The signature and timestamp checked on the Faye server to ensure users are only 
 
 The `publish_to` method will send a post request to the Faye server (using `Net::HTTP`) instructing it to send the given data back to the browser.
 
-
-##  Project Status
-
-Unfortunately I have not had time to actively work on this project recently. If you find a critical issue where it does not work as documented please [ping me on Twitter](http://twitter.com/rbates) and I'll take a look.
-
-
 ## Development & Feedback
 
-Questions or comments? Please use the [issue tracker](https://github.com/ryanb/private_pub/issues). Tests can be run with `bundle` and `rake` commands.
+Questions or comments? Please use the [issue tracker](https://github.com/simonoff/private_pub/issues). Tests can be run with `bundle` and `rake` commands.
+
+## TODO
+
+Fix spec
