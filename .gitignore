@@ -3,3 +3,4 @@
 *.gem
 Gemfile.lock
 .bundle
+app/assets/javascripts/private_pub.js

@@ -1,9 +1,9 @@
 describe("PrivatePub", function() {
-  var pub, doc;
+  var pub, document;
   beforeEach(function() {
     Faye = {}; // To simulate global Faye object
-    doc = {};
-    pub = buildPrivatePub(doc);
+    document = {};
+    pub = PrivatePub;
   });
 
   it("adds a subscription callback", function() {
@@ -15,7 +15,7 @@ describe("PrivatePub", function() {
     var called = false;
     var message = {channel: "/meta/subscribe", subscription: "hello"}
     pub.subscriptions["hello"] = {signature: "abcd", timestamp: "1234"}
-    pub.fayeExtension.outgoing(message, function(message) {
+    pub.fayeExtension().outgoing(message, function(message) {
       expect(message.ext.private_pub_signature).toEqual("abcd");
       expect(message.ext.private_pub_timestamp).toEqual("1234");
       called = true;
@@ -24,7 +24,7 @@ describe("PrivatePub", function() {
   });
 
   it("evaluates javascript in message response", function() {
-    pub.handleResponse({eval: 'self.subscriptions.foo = "bar"'});
+    pub.handleResponse({eval: 'this.subscriptions.foo = "bar"'});
     expect(pub.subscriptions.foo).toEqual("bar");
   });
 
@@ -58,7 +58,7 @@ describe("PrivatePub", function() {
     });
     var options = {server: "server", channel: "somechannel"};
     pub.sign(options);
-    expect(faye.subscribe).toHaveBeenCalledWith("somechannel", pub.handleResponse);
+    expect(faye.subscribe).toHaveBeenCalledWith("somechannel", function() { return pub.handleResponse() });
     expect(pub.subscriptions.server).toEqual("server");
     expect(pub.subscriptions.somechannel).toEqual(options);
   });
@@ -74,21 +74,26 @@ describe("PrivatePub", function() {
   });
 
   it("adds fayeCallback when client and server aren't available", function() {
+    pub.fayeClient = null;
     pub.faye("callback");
     expect(pub.fayeCallbacks[0]).toEqual("callback");
   });
 
   it("adds a script tag loading faye js when the server is present", function() {
+    client = {addExtension: jasmine.createSpy()};
+    Faye.Client = function(server) {
+      return client;
+    };
     script = {};
-    doc.createElement = function() { return script; };
-    doc.documentElement = {appendChild: jasmine.createSpy()};
+    document.createElement = function() { return script; };
+    document.documentElement = {appendChild: jasmine.createSpy()};
     pub.subscriptions.server = "path/to/faye";
     pub.faye("callback");
     expect(pub.fayeCallbacks[0]).toEqual("callback");
     expect(script.type).toEqual("text/javascript");
     expect(script.src).toEqual("path/to/faye.js");
     expect(script.onload).toEqual(pub.connectToFaye);
-    expect(doc.documentElement.appendChild).toHaveBeenCalledWith(script);
+    expect(document.documentElement.appendChild).toHaveBeenCalledWith(script);
   });
 
   it("connects to faye server, adds extension, and executes callbacks", function() {
