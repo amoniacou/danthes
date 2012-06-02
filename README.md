@@ -117,6 +117,13 @@ PrivatePub.subscribe("/messages/new", function(data, channel) {
 
 The Ruby `subscribe_to` helper call is still necessary with this approach to grant the user access to the channel. The JavaScript is just a callback for any custom behavior.
 
+## Debugging
+
+To enable debugging for faye connection process set `debug` to true before first `sign` call.
+
+``` javascript
+PrivatePub.debug = true
+```
 
 ## Configuration
 
