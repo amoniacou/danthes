@@ -1,9 +1,9 @@
 Gem::Specification.new do |s|
   s.name        = "private_pub"
-  s.version     = "1.0.1"
-  s.author      = "Ryan Bates"
-  s.email       = "ryan@railscasts.com"
-  s.homepage    = "http://github.com/ryanb/private_pub"
+  s.version     = "1.0.2"
+  s.author      = ["Ryan Bates", "Alexander Simonov"]
+  s.email       = ["ryan@railscasts.com", "alex@simonov.me"]
+  s.homepage    = "http://github.com/simonoff/private_pub"
   s.summary     = "Private pub/sub messaging in Rails."
   s.description = "Private pub/sub messaging in Rails through Faye."
 
@@ -16,6 +16,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'rake'
   s.add_development_dependency 'rspec', '~> 2.8.0'
   s.add_development_dependency 'jasmine', '>= 1.1.1'
+  s.add_development_dependency 'coffee-script'
 
   s.rubyforge_project = s.name
   s.required_rubygems_version = ">= 1.3.4"
