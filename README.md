@@ -159,6 +159,4 @@ Questions or comments? Please use the [issue tracker](https://github.com/simonof
 
 ## TODO
 
-- Fix jasmine specs
-- Rewrite jasmine specs to CoffeeScript
 - Add support for faye subscribe callbacks
