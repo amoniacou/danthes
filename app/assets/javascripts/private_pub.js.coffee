@@ -1,11 +1,11 @@
-class this.PrivatePub
+window.PrivatePub = class PrivatePub
   @connecting: false
   @debug: false
   @fayeClient: null
   @fayeCallbacks: []
   @subscriptions: {}
   @subscriptionCallbacks: {}
-  
+
   @debugMessage: (message) ->
     console.log(message) if @debug
   
@@ -16,10 +16,14 @@ class this.PrivatePub
       @fayeCallbacks.push(callback)
       if @subscriptions.server && !@connecting
         @connecting = true
+        console.log Faye?
+        console.log window.Faye?
+        console.log document
         unless Faye?
           script = document.createElement 'script'
           script.type = 'text/javascript'
           script.src = @subscriptions.server + '.js'
+          script.id = "faye-connection-script"
           complete = false
           script.onload = script.onreadystatechange = () =>
             if !complete && (!this.readyState || this.readyState is "loaded" || this.readyState is "complete")
@@ -32,7 +36,7 @@ class this.PrivatePub
       else
         @debugMessage 'faye already inited'
         @connectToFaye()
-        
+  
   @fayeExtension: ->
     outgoing : (message, callback) =>
       if message.channel == "/meta/subscribe"
@@ -75,5 +79,13 @@ class this.PrivatePub
       
   @subscribe: (channel, callback) ->
     @debugMessage 'subscribing to ' + channel
-    unless @subscriptionCallbacks[channel]
-      @subscriptionCallbacks[channel] = callback
+    # Changing callback on every call
+    @subscriptionCallbacks[channel] = callback
+  
+  @unsubscribe: (channel) ->
+    @debugMessage 'unsubscribing from ' + channel
+    if @subscriptionCallbacks[channel]
+      @subscriptionCallbacks[channel] = null
+      @faye (faye) =>
+        faye.unsubscribe channel
+      

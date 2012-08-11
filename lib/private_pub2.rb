@@ -2,8 +2,8 @@ require "digest/sha1"
 require "net/http"
 require "yajl/json_gem"
 
-require "private_pub/faye_extension"
-require "private_pub/engine" if defined? Rails
+require "private_pub2/faye_extension"
+require "private_pub2/engine" if defined? Rails
 
 module PrivatePub
   class Error < StandardError; end

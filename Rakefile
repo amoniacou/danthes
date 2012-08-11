@@ -12,10 +12,18 @@ end
 
 task :default => [:compile_js, :spec, "jasmine:ci"]
 
+def compile_coffee_script(file, path)
+  source = File.read File.expand_path("#{path}/#{file}.coffee", __FILE__)
+  compiled_path = File.expand_path("#{path}/compiled/", __FILE__)
+  if !(File.exists?(compiled_path) && File.directory?(compiled_path))
+    Dir.mkdir compiled_path
+  end
+  destination = File.open File.join(compiled_path, file), 'w+'
+  destination.write CoffeeScript.compile(source)
+end
+
 desc "Compile coffeescript"
 task :compile_js do
-  js_path = '../app/assets/javascripts/private_pub.js'
-  source = File.read File.expand_path("#{js_path}.coffee", __FILE__)
-  destination = File.open File.expand_path("#{js_path}", __FILE__), 'w+'
-  destination.write CoffeeScript.compile(source)
+  compile_coffee_script('private_pub.js', '../app/assets/javascripts')
+  compile_coffee_script('private_pub_spec.js', '../spec/coffeescripts')
 end
