@@ -1,1 +1,1 @@
-rvm use 1.9.2@private_pub --create
+rvm use 1.9.3@private_pub --create
