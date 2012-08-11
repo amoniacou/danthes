@@ -12,7 +12,7 @@ This version has fully rewritten CoffeeScript version of asset.
 Add the gem to your Gemfile and run the `bundle` command to install it.
 
 ```ruby
-gem "private_pub"
+gem "private_pub2"
 ```
 
 Run the generator to create the initial files.
