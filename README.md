@@ -1,4 +1,4 @@
-# Private Pub[![Build Status](https://secure.travis-ci.org/simonoff/private_pub.png?branch=master)](http://travis-ci.org/simonoff/private_pub)
+# Private Pub[![Build Status](https://secure.travis-ci.org/phenomena/private_pub.png?branch=master)](http://travis-ci.org/phenomena/private_pub)
 
 Private Pub is a Ruby gem for use with Rails to publish and subscribe to messages through [Faye](http://faye.jcoglan.com/). It allows you to easily provide real-time updates through an open socket without tying up a Rails process. All channels are private so users can only listen to events you subscribe them to.
 
