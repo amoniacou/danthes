@@ -1,13 +1,16 @@
 development:
   adapter: thin
-  server: "http://localhost:9292/faye"
+  server: "http://localhost:9292"
   secret_token: "secret"
+  mount: '/faye'
 test:
   adapter: thin
-  server: "http://localhost:9292/faye"
+  server: "http://localhost:9292"
   secret_token: "secret"
+  mount: '/faye'
 production:
   adapter: thin
-  server: "http://example.com/faye"
+  server: "http://faye.example.com"
+  mount: '/faye'
   secret_token: "<%= defined?(SecureRandom) ? SecureRandom.hex(32) : ActiveSupport::SecureRandom.hex(32) %>"
   signature_expiration: 3600 # one hour

@@ -2,7 +2,7 @@ require "spec_helper"
 
 describe PrivatePub::FayeExtension do
   before(:each) do
-    PrivatePub.reset_config
+    PrivatePub.startup
     @faye = PrivatePub::FayeExtension.new
     @message = {"channel" => "/meta/subscribe", "ext" => {}}
   end

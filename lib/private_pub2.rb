@@ -1,37 +1,55 @@
-require "digest/sha1"
-require "net/http"
-require "yajl/json_gem"
+require 'digest/sha1'
+require 'net/http'
+require 'net/https'
+require 'yajl/json_gem'
 
-require "private_pub2/faye_extension"
-require "private_pub2/engine" if defined? Rails
+require 'private_pub2/faye_extension'
+require 'private_pub2/engine' if defined? Rails
 
 module PrivatePub
   class Error < StandardError; end
 
   class << self
     attr_reader :config
-    attr_reader :default_options
+    attr_accessor :env
+    
+    # List of accepted options in config file
+    ACCEPTED_KEYS = %w(adapter server secret_token mount signature_expiration timeout)
+    
+    # List of accepted options in redis config file
+    REDIS_ACCEPTED_KEYS = %w(host port password database namespace socket)
 
-    # Resets the configuration and options to the default
-    # configuration defaults to empty hash
-    def reset_config
-      @config = {}
-      @default_options = {:mount => "/faye", :timeout => 60, :extensions => [FayeExtension.new]}
+    # Default options
+    DEFAULT_OPTIONS = {:mount => "/faye", :timeout => 60, :extensions => [FayeExtension.new]}
+    REDIS_DEFAULT_OPTIONS = {:type => Faye::Redis, :host => 'localhost', :port => 6379}
+    
+    # Resets the configuration to the default
+    # Set environment
+    def startup
+      @config = DEFAULT_OPTIONS.dup
+      @env = if defined? Rails
+               Rails.env
+             else
+               ENV["RAILS_ENV"] || "development"
+             end
     end
-
-    # Loads the configuration from a given YAML file and environment (such as production)
-    def load_config(filename, environment)
-      yaml = YAML.load_file(filename)[environment.to_s]
+    
+    # Loads the configuration from a given YAML file
+    def load_config(filename)
+      yaml = ::YAML.load_file(filename)[env]
       raise ArgumentError, "The #{environment} environment does not exist in #{filename}" if yaml.nil?
-      yaml.each { |k, v| config[k.to_sym] = v }
+      (yaml.keys - ACCEPTED_KEYS).each {|k| yaml.delete(k)}
+      yaml.each {|k, v| config[k.to_sym] = v}
     end
 
-    # Loads the options from a given YAML file and environment (such as production)
-    def load_redis_config(filename, environment)
-      yaml = YAML.load_file(filename)[environment.to_s]
-      options = {:engine => {:type => Faye::Redis}}
-      yaml.each {|k, v| options[:engine][k.to_sym] = v}
-      options
+    # Loads the options from a given YAML file
+    def load_redis_config(filename)
+      require 'faye/redis'
+      yaml = YAML.load_file(filename)[env]
+      options = REDIS_DEFAULT_OPTIONS
+      (yaml.keys - REDIS_ACCEPTED_KEYS).each {|k| yaml.delete(k)}
+      yaml.each {|k, v| options[k.to_sym] = v}
+      config[:engine] = options
     end
 
     # Publish the given data to a specific channel. This ends up sending
@@ -78,11 +96,10 @@ module PrivatePub
     end
 
     # Returns the Faye Rack application.
-    # Any options given are passed to the Faye::RackAdapter.
-    def faye_app(options = {})
-      Faye::RackAdapter.new(@default_options.merge!(options))
+    def faye_app
+      Faye::RackAdapter.new(config)
     end
   end
 
-  reset_config
+  startup
 end

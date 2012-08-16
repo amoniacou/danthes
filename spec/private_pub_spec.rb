@@ -2,15 +2,17 @@ require "spec_helper"
 
 describe PrivatePub do
   before(:each) do
-    PrivatePub.reset_config
+    PrivatePub.startup
   end
+  
+  let(:config) { PrivatePub.config }
 
   it "defaults server to nil" do
-    PrivatePub.config[:server].should be_nil
+    config[:server].should be_nil
   end
 
   it "defaults signature_expiration to nil" do
-    PrivatePub.config[:signature_expiration].should be_nil
+    config[:signature_expiration].should be_nil
   end
 
   it "defaults subscription timestamp to current time in milliseconds" do
@@ -20,49 +22,51 @@ describe PrivatePub do
   end
 
   it "loads a simple configuration file via load_config" do
-    PrivatePub.load_config("spec/fixtures/private_pub.yml", "production")
-    PrivatePub.config[:server].should eq("http://example.com/faye")
-    PrivatePub.config[:secret_token].should eq("PRODUCTION_SECRET_TOKEN")
-    PrivatePub.config[:signature_expiration].should eq(600)
-    PrivatePub.config[:adapter].should eq('thin')
+    PrivatePub.env = 'production'
+    PrivatePub.load_config("spec/fixtures/private_pub.yml")
+    config[:server].should eq("http://example.com/faye")
+    config[:secret_token].should eq("PRODUCTION_SECRET_TOKEN")
+    config[:signature_expiration].should eq(600)
+    config[:adapter].should eq('thin')
   end
 
   context "when redis config exists" do
     before do
-      @options = PrivatePub.load_redis_config("spec/fixtures/private_pub_redis.yml", "test")
+      PrivatePub.env = 'test'
+      PrivatePub.load_redis_config("spec/fixtures/private_pub_redis.yml")
     end
 
     it "passes redis config to faye engine options" do
-      @options[:engine][:type].should eq Faye::Redis
-      @options[:engine][:host].should eq 'redis_host'
-      @options[:engine][:port].should eq 'redis_port'
-      @options[:engine][:password].should eq 'redis_password'
-      @options[:engine][:database].should eq 'redis_database'
-      @options[:engine][:namespace].should eq '/namespace'
+      config[:engine][:type].should eq Faye::Redis
+      config[:engine][:host].should eq 'redis_host'
+      config[:engine][:port].should eq 'redis_port'
+      config[:engine][:password].should eq 'redis_password'
+      config[:engine][:database].should eq 'redis_database'
+      config[:engine][:namespace].should eq '/namespace'
     end
 
     it "should pass redis config and default options to faye" do
       Faye::RackAdapter.should_receive(:new) do |options|
-        options[:engine].should eq @options[:engine]
+        options[:engine].should eq PrivatePub.config[:engine]
         options[:mount].should eq '/faye'
       end
-      PrivatePub.faye_app(@options)
+      PrivatePub.faye_app
     end
   end
 
   context "when redis config does not exist" do
-    it "should not have :engine inside of options hash" do
-      PrivatePub.default_options.should_not include :engine
+    it "should not have :engine inside of config hash" do
+      config.should_not include :engine
     end
 
     it "should have mount point" do
-      PrivatePub.default_options[:mount].should eq '/faye'
+      config[:mount].should eq '/faye'
     end
   end
 
   it "raises an exception if an invalid environment is passed to load_config" do
     lambda {
-      PrivatePub.load_config("spec/fixtures/private_pub.yml", :test)
+      PrivatePub.load_config("spec/fixtures/private_pub.yml", 'foo')
     }.should raise_error ArgumentError
   end
 
