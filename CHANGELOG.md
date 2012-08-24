@@ -1,6 +1,11 @@
-## 2.0
+# d'Anthès
 
-* rewriting PrivatePub into CoffeeScript
+## 1.0 (Sat Aug 25 22:44:49 EEST 2012)
+
+* initial release
+
+
+# PrivatePub
 
 ## 1.0.0 (January 25, 2012)
 

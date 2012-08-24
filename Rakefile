@@ -24,6 +24,6 @@ end
 
 desc "Compile coffeescript"
 task :compile_js do
-  compile_coffee_script('private_pub.js', '../app/assets/javascripts')
-  compile_coffee_script('private_pub_spec.js', '../spec/coffeescripts')
+  compile_coffee_script('danthes.js', '../app/assets/javascripts')
+  compile_coffee_script('danthes_spec.js', '../spec/coffeescripts')
 end

@@ -1,6 +1,6 @@
-module PrivatePub
+module Danthes
   # This class is an extension for the Faye::RackAdapter.
-  # It is used inside of PrivatePub.faye_app.
+  # It is used inside of Danthes.faye_app.
   class FayeExtension
     # Callback to handle incoming Faye messages. This authenticates both
     # subscribe and publish calls.
@@ -17,23 +17,23 @@ module PrivatePub
 
     # Ensure the subscription signature is correct and that it has not expired.
     def authenticate_subscribe(message)
-      subscription = PrivatePub.subscription(:channel => message["subscription"], 
-                                             :timestamp => message["ext"]["private_pub_timestamp"])
-      if message["ext"]["private_pub_signature"] != subscription[:signature]
+      subscription = Danthes.subscription(:channel => message["subscription"], 
+                                          :timestamp => message["ext"]["danthes_timestamp"])
+      if message["ext"]["danthes_signature"] != subscription[:signature]
         message["error"] = "Incorrect signature."
-      elsif PrivatePub.signature_expired? message["ext"]["private_pub_timestamp"].to_i
+      elsif Danthes.signature_expired? message["ext"]["danthes_timestamp"].to_i
         message["error"] = "Signature has expired."
       end
     end
 
     # Ensures the secret token is correct before publishing.
     def authenticate_publish(message)
-      if PrivatePub.config[:secret_token].nil?
-        raise Error, "No secret_token config set, ensure private_pub.yml is loaded properly."
-      elsif message["ext"]["private_pub_token"] != PrivatePub.config[:secret_token]
+      if Danthes.config[:secret_token].nil?
+        raise Error, "No secret_token config set, ensure danthes.yml is loaded properly."
+      elsif message["ext"]["danthes_token"] != Danthes.config[:secret_token]
         message["error"] = "Incorrect token."
       else
-        message["ext"]["private_pub_token"] = nil
+        message["ext"]["danthes_token"] = nil
       end
     end
   end

@@ -3,10 +3,10 @@ require 'net/http'
 require 'net/https'
 require 'yajl/json_gem'
 
-require 'private_pub2/faye_extension'
-require 'private_pub2/engine' if defined? Rails
+require 'danthes/faye_extension'
+require 'danthes/engine' if defined? Rails
 
-module PrivatePub
+module Danthes
   class Error < StandardError; end
 
   class << self
@@ -60,7 +60,7 @@ module PrivatePub
 
     # Sends the given message hash to the Faye server using Net::HTTP.
     def publish_message(message)
-      raise Error, "No server specified, ensure private_pub.yml was loaded properly." unless config[:server]
+      raise Error, "No server specified, ensure danthes.yml was loaded properly." unless config[:server]
       url = URI.parse(config[:server])
 
       form = Net::HTTP::Post.new(url.path.empty? ? '/' : url.path)
@@ -73,7 +73,7 @@ module PrivatePub
 
     # Returns a message hash for sending to Faye
     def message(channel, data)
-      message = {:channel => channel, :data => {:channel => channel}, :ext => {:private_pub_token => config[:secret_token]}}
+      message = {:channel => channel, :data => {:channel => channel}, :ext => {:danthes_token => config[:secret_token]}}
       if data.kind_of? String
         message[:data][:eval] = data
       else

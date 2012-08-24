@@ -1,6 +1,6 @@
 src_dir: app/assets/javascripts/compiled
 
 src_files:
-  - private_pub.js
+  - danthes.js
 
 spec_dir: spec/coffeescripts/compiled
