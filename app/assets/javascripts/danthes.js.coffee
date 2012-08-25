@@ -1,9 +1,26 @@
+# Danthes Privat pub/sub Faye wrapper
+#
+# @example Howto enable debug
+#   Danthes.debug = true
+# @example reset all internal data
+#   Danthes.reset()
+# @example Howto sign and subscribe on channel with callback function
+#   Danthes.sign
+#     server: 'faye.example.com'
+#     channel: 'somechannel'
+#     signature: 'dc1c71d3e959ebb6f49aa6af0c86304a0740088d'
+#     timestamp: 1302306682972
+#     callback: (data) ->
+#       console.log(data)
+
 window.Danthes = class Danthes
+  
   @debug: false    
 
   @debugMessage: (message) ->
     console.log(message) if @debug
   
+  # Reset all
   @reset: ->
     @connecting = false
     @fayeClient = null
@@ -16,6 +33,7 @@ window.Danthes = class Danthes
       retry: 5
       endpoints: {}
 
+  # Connect to faye
   @faye: (callback) =>
     if @fayeClient?
       callback(@fayeClient)
@@ -41,6 +59,7 @@ window.Danthes = class Danthes
         @debugMessage 'faye already inited'
         @connectToFaye()
   
+  # Faye extension for incoming and outgoing messages
   @fayeExtension:
     incoming : (message, callback) =>
       @debugMessage "incomming message #{message}"
@@ -54,7 +73,8 @@ window.Danthes = class Danthes
         message.ext.danthes_signature = subscription.signature
         message.ext.danthes_timestamp = subscription.timestamp
       callback(message)
-
+  
+  # Initialize Faye client
   @connectToFaye: ->
     if @server && Faye?
       @debugMessage 'trying to connect faye'
@@ -65,6 +85,8 @@ window.Danthes = class Danthes
       @debugMessage 'faye connected'
       callback(@fayeClient) for callback in @fayeCallbacks
 
+  # Sign to channel
+  # @param [Object] options for signing
   @sign: (options) ->
     @debugMessage 'sign to faye'
     @server = options.server unless @server
@@ -81,7 +103,9 @@ window.Danthes = class Danthes
             @debugMessage "subscription for #{channel} is active now"
           subscription.errback (error) =>
             @debugMessage "error for #{channel}: #{error.message}"
-
+  
+  # Handle response from Faye
+  # @param [Object] message from Faye
   @handleResponse: (message) ->
     if message.eval
       eval(message.eval)
@@ -89,7 +113,10 @@ window.Danthes = class Danthes
     return unless @subscriptions[channel]?
     if callback = @subscriptions[channel]['callback']
       callback(message.data, channel)
-      
+  
+  # Subscribe to channel with callback
+  # @param channel [String] Channel name
+  # @param callback [Function] Callback function
   @subscribe: (channel, callback) ->
     @debugMessage "subscribing to #{channel}"
     if @subscriptions[channel]?
@@ -100,12 +127,15 @@ window.Danthes = class Danthes
       return false
     true
   
+  # Unsubscribe from channel
+  # @param [String] Channel name
   @unsubscribe: (channel) ->
     @debugMessage "unsubscribing from #{channel}"
     if @subscriptions[channel]
       @subscriptions[channel]['sub'].cancel()
       delete @subscriptions[channel]
   
+  # Unsubscribe from all channels 
   @unsubscribeAll: ->
     @unsubscribe(channel) for channel, _ of @subscriptions
 
