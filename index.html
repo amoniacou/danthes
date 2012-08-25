@@ -1,0 +1,189 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Danthes by phenomena</title>
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script src="javascripts/respond.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <!--[if lt IE 8]>
+    <link rel="stylesheet" href="stylesheets/ie.css">
+    <![endif]-->
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+  </head>
+  <body>
+      <div id="header">
+        <nav>
+          <li class="fork"><a href="https://github.com/phenomena/danthes">View On GitHub</a></li>
+          <li class="downloads"><a href="https://github.com/phenomena/danthes/zipball/master">ZIP</a></li>
+          <li class="downloads"><a href="https://github.com/phenomena/danthes/tarball/master">TAR</a></li>
+          <li class="title">DOWNLOADS</li>
+        </nav>
+      </div><!-- end header -->
+
+    <div class="wrapper">
+
+      <section>
+        <div id="title">
+          <h1>Danthes</h1>
+          <p>Private pub/sub messaging in Rails through Faye. More Faye features supported. Based on PrivatePub</p>
+          <hr>
+          <span class="credits left">Project maintained by <a href="https://github.com/phenomena">phenomena</a></span>
+          <span class="credits right">Hosted on GitHub Pages &mdash; Theme by <a href="http://twitter.com/#!/michigangraham">mattgraham</a></span>
+        </div>
+
+        <h1>d'Anthès <a href="http://travis-ci.org/phenomena/danthes"><img src="https://secure.travis-ci.org/phenomena/danthes.png?branch=master" alt="Build Status"></a>
+</h1>
+
+<p>d'Anthès is a Ruby gem for use with Rails to publish and subscribe to messages through <a href="http://faye.jcoglan.com/">Faye</a>. It allows you to easily provide real-time updates through an open socket without tying up a Rails process. All channels are private so users can only listen to events you subscribe them to. Based on PrivatePub gem.</p>
+
+<h2>Setup</h2>
+
+<p>Add the gem to your Gemfile and run the <code>bundle</code> command to install it.</p>
+
+<div class="highlight"><pre><span class="n">gem</span> <span class="s1">'danthes'</span>
+</pre></div>
+
+<p>Run the generator to create the initial files.</p>
+
+<pre><code>rails g danthes:install
+</code></pre>
+
+<p>Next, start up Faye using the rackup file that was generated.</p>
+
+<pre><code>rackup danthes.ru -s thin -E production
+</code></pre>
+
+<p><strong>In Rails 3.1</strong> add the JavaScript file to your application.js file manifest.</p>
+
+<div class="highlight"><pre><span class="c1">//= require danthes</span>
+</pre></div>
+
+<p>It's not necessary to include faye's connect.js since that will be handled automatically for you.</p>
+
+<h2>Serving Faye over HTTPS (with Thin)</h2>
+
+<p>To serve Faye over HTTPS you could create a thin configuration file <code>config/private_pub_thin.yml</code> similar to the following:</p>
+
+<div class="highlight"><pre><span class="nn">---</span>
+<span class="l-Scalar-Plain">port</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">4443</span>
+<span class="l-Scalar-Plain">ssl</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">true</span>
+<span class="l-Scalar-Plain">ssl_key_file</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">/path/to/server.pem</span>
+<span class="l-Scalar-Plain">ssl_cert_file</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">/path/to/certificate_chain.pem</span>
+<span class="l-Scalar-Plain">environment</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">production</span>
+<span class="l-Scalar-Plain">rackup</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">danthes.ru</span>
+</pre></div>
+
+<p>The <code>certificate_chain.pem</code> file should contain your signed certificate, followed by intermediate certificates (if any) and the root certificate of the CA that signed the key.</p>
+
+<p>Next reconfigure the URL in <code>config/danthes.yml</code> to look like <code>https://your.hostname.com:4443/faye</code></p>
+
+<p>Finally start up Thin from the project root.</p>
+
+<pre><code>thin -C config/danthes_thin.yml start
+</code></pre>
+
+<h2>Serving Faye with Redis engine</h2>
+
+<p>To serve Faye with Redis engine, you should create <code>config/danthes_redis.yml</code></p>
+
+<div class="highlight"><pre><span class="l-Scalar-Plain">production</span><span class="p-Indicator">:</span>
+  <span class="l-Scalar-Plain">host</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">redis_host</span>
+  <span class="l-Scalar-Plain">port</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">redis_port</span>
+  <span class="l-Scalar-Plain">password</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">redis_password</span>
+  <span class="l-Scalar-Plain">database</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">redis_database</span>
+  <span class="l-Scalar-Plain">namespace</span><span class="p-Indicator">:</span> <span class="s">'/namespace'</span>
+</pre></div>
+
+<p>Note: database and namespace are optional.</p>
+
+<h2>Usage</h2>
+
+<p>Use the <code>subscribe_to</code> helper method on any page to subscribe to a channel.</p>
+
+<div class="highlight"><pre><span class="cp">&lt;%=</span> <span class="n">subscribe_to</span> <span class="s2">"/messages/new"</span> <span class="cp">%&gt;</span>
+</pre></div>
+
+<p>Use the <code>publish_to</code> helper method to send JavaScript to that channel. This is usually done in a JavaScript AJAX template (such as a create.js.erb file).</p>
+
+<div class="highlight"><pre><span class="cp">&lt;%</span> <span class="n">publish_to</span> <span class="s2">"/messages/new"</span> <span class="k">do</span> <span class="cp">%&gt;</span>
+  $("#chat").append("<span class="cp">&lt;%=</span> <span class="n">j</span> <span class="n">render</span><span class="p">(</span><span class="vi">@messages</span><span class="p">)</span> <span class="cp">%&gt;</span>");
+<span class="cp">&lt;%</span> <span class="k">end</span> <span class="cp">%&gt;</span>
+</pre></div>
+
+<p>This JavaScript will be immediately evaluated on all clients who have subscribed to that channel. In this example they will see the new chat message appear in real-time without reloading the browser.</p>
+
+<h2>Alternative Usage</h2>
+
+<p>If you prefer to work through JSON instead of <code>.js.erb</code> templates, you can pass a hash to <code>publish_to</code> instead of a block and it will be converted <code>to_json</code> behind the scenes. This can be done anywhere (such as the controller).</p>
+
+<div class="highlight"><pre><span class="no">Danthes</span><span class="o">.</span><span class="n">publish_to</span> <span class="s2">"/messages/new"</span><span class="p">,</span> <span class="ss">:chat_message</span> <span class="o">=&gt;</span> <span class="s2">"Hello, world!"</span>
+</pre></div>
+
+<p>And then handle this through JavaScript on the client side.</p>
+
+<div class="highlight"><pre><span class="nx">Danthes</span><span class="p">.</span><span class="nx">subscribe</span><span class="p">(</span><span class="s2">"/messages/new"</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">data</span><span class="p">,</span> <span class="nx">channel</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">$</span><span class="p">(</span><span class="s2">"#chat"</span><span class="p">).</span><span class="nx">append</span><span class="p">(</span><span class="nx">data</span><span class="p">.</span><span class="nx">chat_message</span><span class="p">);</span>
+<span class="p">});</span>
+</pre></div>
+
+<p>The Ruby <code>subscribe_to</code> helper call is still necessary with this approach to grant the user access to the channel. The JavaScript is just a callback for any custom behavior.</p>
+
+<h2>Debugging</h2>
+
+<p>To enable debugging for faye connection process set <code>debug</code> to true before first <code>sign</code> call.</p>
+
+<div class="highlight"><pre><span class="nx">Danthes</span><span class="p">.</span><span class="nx">debug</span> <span class="o">=</span> <span class="kc">true</span>
+</pre></div>
+
+<h2>Configuration</h2>
+
+<p>The configuration is set separately for each environment in the generated <code>config/danthes.yml</code> file. Here are the options.</p>
+
+<ul>
+<li>
+<code>server</code>: The URL to use for the Faye server such as <code>http://localhost:9292/faye</code>.</li>
+<li>
+<code>secret_token</code>: A secret hash to secure the server. Can be any string.</li>
+<li>
+<code>signature_expiration</code>: The length of time in seconds before a subscription signature expires. If this is not set there is no expiration. Note: if Faye is on a separate server from the Rails app, the system clocks must be in sync for the expiration to work properly.</li>
+</ul><h2>How It Works</h2>
+
+<p>The <code>subscribe_to</code> helper will output the following script which subscribes the user to a specific channel and server.</p>
+
+<div class="highlight"><pre><span class="nt">&lt;script </span><span class="na">type=</span><span class="s">"text/javascript"</span><span class="nt">&gt;</span>
+  <span class="nx">Danthes</span><span class="p">.</span><span class="nx">sign</span><span class="p">({</span>
+    <span class="nx">channel</span><span class="o">:</span> <span class="s2">"/messages/new"</span><span class="p">,</span>
+    <span class="nx">timestamp</span><span class="o">:</span> <span class="mi">1302306682972</span><span class="p">,</span>
+    <span class="nx">signature</span><span class="o">:</span> <span class="s2">"dc1c71d3e959ebb6f49aa6af0c86304a0740088d"</span><span class="p">,</span>
+    <span class="nx">server</span><span class="o">:</span> <span class="s2">"http://localhost:9292/faye"</span>
+  <span class="p">});</span>
+<span class="nt">&lt;/script&gt;</span>
+</pre></div>
+
+<p>The signature and timestamp checked on the Faye server to ensure users are only able to access channels you subscribe them to. The signature will automatically expire after the time specified in the configuration.</p>
+
+<p>The <code>publish_to</code> method will send a post request to the Faye server (using <code>Net::HTTP</code>) instructing it to send the given data back to the browser.</p>
+
+<h2>Development &amp; Feedback</h2>
+
+<p>Questions or comments? Please use the <a href="https://github.com/phenomena/danthes/issues">issue tracker</a>. Tests can be run with <code>bundle</code> and <code>rake</code> commands.</p>
+
+<h2>TODO</h2>
+
+<ul>
+<li>Add support for faye subscribe callbacks</li>
+</ul>
+      </section>
+
+    </div>
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+    
+  </body>
+</html>
