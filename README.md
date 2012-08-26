@@ -2,6 +2,12 @@
 
 d'Anthès is a Ruby gem for use with Rails to publish and subscribe to messages through [Faye](http://faye.jcoglan.com/). It allows you to easily provide real-time updates through an open socket without tying up a Rails process. All channels are private so users can only listen to events you subscribe them to. Based on PrivatePub gem.
 
+## Docs
+
+[Ruby](http://rubydoc.info/github/phenomena/danthes/frames)
+
+[CoffeeScript](http://phenomena.github.com/danthes/doc/classes/Danthes.html)
+
 ## Setup
 
 Add the gem to your Gemfile and run the `bundle` command to install it.
@@ -57,18 +63,11 @@ thin -C config/danthes_thin.yml start
 
 ## Serving Faye with Redis engine
 
-To serve Faye with Redis engine, you should create `config/danthes_redis.yml`
+Run the generator to create the initial redis config file.
 
-```yaml
-production:
-  host: redis_host
-  port: redis_port
-  password: redis_password
-  database: redis_database
-  namespace: '/namespace'
 ```
-
-Note: database and namespace are optional.
+rails g danthes:redis_install
+```
 
 ## Usage
 
@@ -119,9 +118,11 @@ Danthes.debug = true
 
 The configuration is set separately for each environment in the generated `config/danthes.yml` file. Here are the options.
 
-* `server`: The URL to use for the Faye server such as `http://localhost:9292/faye`.
+* `server`: The URL to use for the Faye server such as `http://localhost:9292`.
+* `mount`: The mount path for Faye
 * `secret_token`: A secret hash to secure the server. Can be any string.
 * `signature_expiration`: The length of time in seconds before a subscription signature expires. If this is not set there is no expiration. Note: if Faye is on a separate server from the Rails app, the system clocks must be in sync for the expiration to work properly.
+* `adapter`: Adapter for the Rack application
 
 
 ## How It Works

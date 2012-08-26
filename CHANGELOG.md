@@ -1,10 +1,13 @@
 # d'Anthès
 
-## 1.0.1 (Sun Aug 26 14:10:11 EEST 2012)
+## 1.0.1 (August 26 2012)
 
 * Generator for redis config file
+* Fixes for rackup file
+* Fixes for full server url
+* CoffeeScript class documentation
 
-## 1.0 (Sat Aug 25 22:44:49 EEST 2012)
+## 1.0 (August 25 2012)
 
 * initial release
 
