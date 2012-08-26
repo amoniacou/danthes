@@ -2,6 +2,7 @@ source "http://rubygems.org"
 gemspec
 
 gem 'rake'
+gem 'faye-redis'
 gem 'guard'
 gem 'guard-coffeescript'
 gem 'jasmine', '1.2.0.rc3'

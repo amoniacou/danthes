@@ -62,10 +62,10 @@ window.Danthes = class Danthes
   # Faye extension for incoming and outgoing messages
   @fayeExtension:
     incoming : (message, callback) =>
-      @debugMessage "incomming message #{message}"
+      @debugMessage "incomming message #{JSON.stringify(message)}"
       callback(message)
     outgoing : (message, callback) =>
-      @debugMessage "outgoing message #{message}"
+      @debugMessage "outgoing message #{JSON.stringify(message)}"
       if message.channel == "/meta/subscribe"
         subscription = @subscriptions[message.subscription]['opts']
         # Attach the signature and timestamp to subscription messages

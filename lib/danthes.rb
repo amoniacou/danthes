@@ -61,7 +61,7 @@ module Danthes
     # Sends the given message hash to the Faye server using Net::HTTP.
     def publish_message(message)
       raise Error, "No server specified, ensure danthes.yml was loaded properly." unless config[:server]
-      url = URI.parse(config[:server])
+      url = URI.parse(server_url)
 
       form = Net::HTTP::Post.new(url.path.empty? ? '/' : url.path)
       form.set_form_data(:message => message.to_json)
@@ -81,11 +81,15 @@ module Danthes
       end
       message
     end
-
+    
+    def server_url
+      [config[:server], config[:mount].gsub(/^\//,'')].join('/')
+    end
+    
     # Returns a subscription hash to pass to the PrivatePub.sign call in JavaScript.
     # Any options passed are merged to the hash.
     def subscription(options = {})
-      sub = {:server => config[:server], :timestamp => (Time.now.to_f * 1000).round}.merge(options)
+      sub = {:server => server_url, :timestamp => (Time.now.to_f * 1000).round}.merge(options)
       sub[:signature] = Digest::SHA1.hexdigest([config[:secret_token], sub[:channel], sub[:timestamp]].join)
       sub
     end

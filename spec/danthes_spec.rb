@@ -72,10 +72,17 @@ describe Danthes do
 
   it "includes channel, server, and custom time in subscription" do
     Danthes.config[:server] = "server"
+    Danthes.config[:mount] = '/faye'
     subscription = Danthes.subscription(:timestamp => 123, :channel => "hello")
     subscription[:timestamp].should eq(123)
     subscription[:channel].should eq("hello")
-    subscription[:server].should eq("server")
+    subscription[:server].should eq("server/faye")
+  end
+  
+  it "returns full server url from server and mount configs" do
+    Danthes.config[:server] = "server.com"
+    Danthes.config[:mount] = '/faye'
+    Danthes.server_url.should == 'server.com/faye'
   end
 
   it "does a sha1 digest of channel, timestamp, and secret token" do
@@ -110,8 +117,9 @@ describe Danthes do
 
   it "publish message as json to server using Net::HTTP" do
     Danthes.config[:server] = "http://localhost"
+    Danthes.config[:mount] = '/faye/path'
     message = 'foo'
-    faye = stub_request(:post, "http://localhost/").
+    faye = stub_request(:post, "http://localhost/faye/path").
              with(:body => {"message"=>"\"foo\""},
                   :headers => {'Accept'=>'*/*', 'Content-Type'=>'application/x-www-form-urlencoded', 'User-Agent'=>'Ruby'}).
              to_return(:status => 200, :body => "", :headers => {})
@@ -121,6 +129,7 @@ describe Danthes do
 
   it "it should use HTTPS if the server URL says so" do
     Danthes.config[:server] = "https://localhost"
+    Danthes.config[:mount] = '/faye/path'
     http = mock(:http).as_null_object
 
     Net::HTTP.should_receive(:new).and_return(http)
