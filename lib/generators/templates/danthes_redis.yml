@@ -1,0 +1,14 @@
+development:
+  host: localhost
+  port: 6379
+  namespace: '/danthes'
+test:
+  host: localhost
+  port: 6379
+  namespace: '/danthes'
+production:
+  host: redis_host
+  port: redis_port
+  password: redis_password
+  database: redis_database
+  namespace: '/namespace'

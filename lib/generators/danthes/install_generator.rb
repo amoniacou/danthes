@@ -1,10 +1,9 @@
+require 'generators/danthes'
+
 module Danthes
   module Generators
-    class InstallGenerator < Rails::Generators::Base
-      def self.source_root
-        File.dirname(__FILE__) + "/templates"
-      end
-
+    class InstallGenerator < Base
+      desc 'Create sample config file and add rackup file'
       def copy_files
         template "danthes.yml", "config/danthes.yml"
         if ::Rails.version < "3.1"

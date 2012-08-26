@@ -21,7 +21,6 @@ module Danthes
 
     # Default options
     DEFAULT_OPTIONS = {:mount => "/faye", :timeout => 60, :extensions => [FayeExtension.new]}
-    REDIS_DEFAULT_OPTIONS = {:type => Faye::Redis, :host => 'localhost', :port => 6379}
     
     # Resets the configuration to the default
     # Set environment
@@ -46,7 +45,8 @@ module Danthes
     def load_redis_config(filename)
       require 'faye/redis'
       yaml = YAML.load_file(filename)[env]
-      options = REDIS_DEFAULT_OPTIONS
+      # default redis options
+      options = {:type => Faye::Redis, :host => 'localhost', :port => 6379}
       (yaml.keys - REDIS_ACCEPTED_KEYS).each {|k| yaml.delete(k)}
       yaml.each {|k, v| options[k.to_sym] = v}
       config[:engine] = options

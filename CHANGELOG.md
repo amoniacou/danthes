@@ -1,5 +1,9 @@
 # d'Anthès
 
+## 1.0.1 (Sun Aug 26 14:10:11 EEST 2012)
+
+* Generator for redis config file
+
 ## 1.0 (Sat Aug 25 22:44:49 EEST 2012)
 
 * initial release
