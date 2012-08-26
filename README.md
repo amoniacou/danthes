@@ -6,7 +6,7 @@ d'Anthès is a Ruby gem for use with Rails to publish and subscribe to messages 
 
 [Ruby](http://rubydoc.info/github/phenomena/danthes/frames)
 
-[CoffeeScript](http://phenomena.github.com/danthes/doc/classes/Danthes.html)
+[CoffeeScript](https://github.com/phenomena/danthes/wiki/CoffeeScript-documentation)
 
 ## Setup
 
