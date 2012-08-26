@@ -32,7 +32,7 @@
       <section>
         <div id="title">
           <h1>Danthes</h1>
-          <p>Private pub/sub messaging in Rails through Faye. More Faye features supported. Based on PrivatePub</p>
+          <p>Private pub/sub messaging in Rails through Faye. Based on PrivatePub gem.</p>
           <hr>
           <span class="credits left">Project maintained by <a href="https://github.com/phenomena">phenomena</a></span>
           <span class="credits right">Hosted on GitHub Pages &mdash; Theme by <a href="http://twitter.com/#!/michigangraham">mattgraham</a></span>
@@ -42,6 +42,12 @@
 </h1>
 
 <p>d'Anthès is a Ruby gem for use with Rails to publish and subscribe to messages through <a href="http://faye.jcoglan.com/">Faye</a>. It allows you to easily provide real-time updates through an open socket without tying up a Rails process. All channels are private so users can only listen to events you subscribe them to. Based on PrivatePub gem.</p>
+
+<h2>Docs</h2>
+
+<p><a href="http://rubydoc.info/github/phenomena/danthes/frames">Ruby</a></p>
+
+<p><a href="http://phenomena.github.com/danthes/doc/classes/Danthes.html">CoffeeScript</a></p>
 
 <h2>Setup</h2>
 
@@ -91,17 +97,10 @@
 
 <h2>Serving Faye with Redis engine</h2>
 
-<p>To serve Faye with Redis engine, you should create <code>config/danthes_redis.yml</code></p>
+<p>Run the generator to create the initial redis config file.</p>
 
-<div class="highlight"><pre><span class="l-Scalar-Plain">production</span><span class="p-Indicator">:</span>
-  <span class="l-Scalar-Plain">host</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">redis_host</span>
-  <span class="l-Scalar-Plain">port</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">redis_port</span>
-  <span class="l-Scalar-Plain">password</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">redis_password</span>
-  <span class="l-Scalar-Plain">database</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">redis_database</span>
-  <span class="l-Scalar-Plain">namespace</span><span class="p-Indicator">:</span> <span class="s">'/namespace'</span>
-</pre></div>
-
-<p>Note: database and namespace are optional.</p>
+<pre><code>rails g danthes:redis_install
+</code></pre>
 
 <h2>Usage</h2>
 
@@ -148,11 +147,15 @@
 
 <ul>
 <li>
-<code>server</code>: The URL to use for the Faye server such as <code>http://localhost:9292/faye</code>.</li>
+<code>server</code>: The URL to use for the Faye server such as <code>http://localhost:9292</code>.</li>
+<li>
+<code>mount</code>: The mount path for Faye</li>
 <li>
 <code>secret_token</code>: A secret hash to secure the server. Can be any string.</li>
 <li>
 <code>signature_expiration</code>: The length of time in seconds before a subscription signature expires. If this is not set there is no expiration. Note: if Faye is on a separate server from the Rails app, the system clocks must be in sync for the expiration to work properly.</li>
+<li>
+<code>adapter</code>: Adapter for the Rack application</li>
 </ul><h2>How It Works</h2>
 
 <p>The <code>subscribe_to</code> helper will output the following script which subscribes the user to a specific channel and server.</p>
