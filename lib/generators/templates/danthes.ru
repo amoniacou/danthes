@@ -6,7 +6,7 @@ require "danthes"
 require "thin"
 
 Danthes.load_config(File.expand_path("../config/danthes.yml", __FILE__))
-Faye::WebSocket.load_adapter(PrivatePub.config[:adapter])
+Faye::WebSocket.load_adapter(Danthes.config[:adapter])
 
 path = File.expand_path("../config/danthes_redis.yml", __FILE__)
 if File.exist?(path)
