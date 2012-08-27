@@ -39,7 +39,7 @@ It's not necessary to include faye's connect.js since that will be handled autom
 
 ## Serving Faye over HTTPS (with Thin)
 
-To serve Faye over HTTPS you could create a thin configuration file `config/private_pub_thin.yml` similar to the following:
+To serve Faye over HTTPS you could create a thin configuration file `config/danthes_thin.yml` similar to the following:
 
 ```yaml
 ---
