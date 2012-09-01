@@ -93,15 +93,19 @@ window.Danthes = class Danthes
     channel = options.channel
     unless @subscriptions[channel]?
       @subscriptions[channel] = {}
-      @subscriptions[channel]['opts'] = options
+      @subscriptions[channel]['callback'] = options['callback'] if options['callback']?
+      @subscriptions[channel]['opts'] =
+        signature: options['signature']
+        timestamp: options['timestamp']     
       @faye (faye) =>
-        subscription = faye.subscribe channel, (message) =>
-          @handleResponse(message)
+        subscription = faye.subscribe channel, (message) => @handleResponse(message)
         if subscription?
           @subscriptions[channel]['sub'] = subscription
           subscription.callback =>
+            options['connect']?(subscription)
             @debugMessage "subscription for #{channel} is active now"
           subscription.errback (error) =>
+            options['error']?(subscription, error)
             @debugMessage "error for #{channel}: #{error.message}"
   
   # Handle response from Faye
@@ -113,6 +117,15 @@ window.Danthes = class Danthes
     return unless @subscriptions[channel]?
     if callback = @subscriptions[channel]['callback']
       callback(message.data, channel)
+  
+  # Disable transports
+  # @param [String] name of transport
+  @disableTransport: (transport) ->
+    return unless transport in ['websocket', 'long-polling', 'callback-polling', 'in-process']
+    unless transport in @disables
+      @disables.push(transport)
+      @debugMessage "#{transport} faye transport will be disabled"
+    true
   
   # Subscribe to channel with callback
   # @param channel [String] Channel name

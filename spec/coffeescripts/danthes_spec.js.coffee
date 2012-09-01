@@ -6,7 +6,7 @@ describe "Danthes", ->
     faye = {subscribe: jasmine.createSpy()}
     spyOn(pub, 'faye').andCallFake (callback) ->
       callback(faye)
-    options = {server: "server", channel: "#{channel}"}
+    options = {server: "server", channel: "#{channel}", timestamp: 1234567890, signature: '1234567890'}
     pub.sign(options)
     return [faye, options]
   
@@ -79,7 +79,7 @@ describe "Danthes", ->
     [faye, options] = signToChannel('somechannel')
     expect(faye.subscribe).toHaveBeenCalled()
     expect(pub.server).toEqual("server")
-    expect(pub.subscriptions.somechannel.opts).toEqual(options)
+    expect(pub.subscriptions.somechannel.opts).toEqual(timestamp: options['timestamp'], signature: options['signature'])
 
   it "connects to faye server, adds extension, and executes callbacks", ->
     callback = jasmine.createSpy()
@@ -96,6 +96,41 @@ describe "Danthes", ->
     expect(client.addExtension).toHaveBeenCalledWith(pub.fayeExtension)
     expect(callback).toHaveBeenCalledWith(client)
     
+  it "adds transport to disables", ->
+    expect(pub.disableTransport('websocket')).toBeTruthy()
+    expect(pub.disables).toEqual(['websocket'])
+  
+  it "adds transport to disables only one time", ->
+    pub.disableTransport('websocket')
+    pub.disableTransport('websocket')
+    expect(pub.disables).toEqual(['websocket'])
+    
+  it "returns false if not accepted transport wants to be disabled", ->
+    expect(pub.disableTransport('websocket123')).toBeUndefined()
+    expect(pub.disables).toEqual([])
+    
+  it "connects to faye server, and executes disable once", ->
+    callback = jasmine.createSpy()
+    client = {addExtension: jasmine.createSpy(), disable: jasmine.createSpy()}
+    window.Faye = {}
+    window.Faye.Client = (server) -> client
+    pub.server = "server"
+    pub.disableTransport('websocket')
+    pub.connectToFaye()
+    expect(client.disable).toHaveBeenCalledWith('websocket')
+    
+  it "connects to faye server, and executes disable once", ->
+    callback = jasmine.createSpy()
+    client = {addExtension: jasmine.createSpy(), disable: jasmine.createSpy()}
+    window.Faye = {}
+    window.Faye.Client = (server) -> client
+    pub.server = "server"
+    pub.disableTransport('websocket')
+    pub.disableTransport('long-polling')
+    pub.connectToFaye()
+    expect(client.disable).toHaveBeenCalledWith('websocket')
+    expect(client.disable).toHaveBeenCalledWith('long-polling')
+    
   it "adds subscription faye object into channel object", ->
     sub = {callback: jasmine.createSpy(), errback: jasmine.createSpy()}
     pub.fayeClient = {subscribe: jasmine.createSpy().andReturn(sub)}
@@ -105,6 +140,26 @@ describe "Danthes", ->
     expect(sub.errback).toHaveBeenCalled()
     expect(pub.subscriptions.somechannel.sub).toEqual(sub)
     
+  it "adds subscription faye object into channel object and call connect callback after connection", ->
+    sub = 
+      callback: (f) -> 
+        f()
+      errback: jasmine.createSpy()
+    pub.fayeClient = {subscribe: jasmine.createSpy().andReturn(sub)}
+    options = {server: "server", channel: 'somechannel', connect: jasmine.createSpy()}
+    pub.sign(options)
+    expect(options.connect).toHaveBeenCalledWith(sub)
+  
+  it "adds subscription faye object into channel object and call error callback after connection", ->
+    sub = 
+      callback: jasmine.createSpy()
+      errback: (f) -> 
+        f('error')
+    pub.fayeClient = {subscribe: jasmine.createSpy().andReturn(sub)}
+    options = {server: "server", channel: 'somechannel', error: jasmine.createSpy()}
+    pub.sign(options)
+    expect(options.error).toHaveBeenCalledWith(sub, 'error')
+        
   it "removes subscription to the channel", ->
     sub = {callback: jasmine.createSpy(), errback: jasmine.createSpy(), cancel: jasmine.createSpy()}
     pub.fayeClient = {subscribe: jasmine.createSpy().andReturn(sub)}
