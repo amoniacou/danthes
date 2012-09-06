@@ -1,5 +1,12 @@
 # d'Anthès
 
+## 1.0.2 (September 7 2012)
+
+* Subscription callback through sign call
+* On subscription connect callback
+* On subscription error callback
+* Transport disabling
+
 ## 1.0.1 (August 26 2012)
 
 * Generator for redis config file
