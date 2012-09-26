@@ -48,7 +48,7 @@ window.Danthes = class Danthes
           script.id = "faye-connection-script"
           complete = false
           script.onload = script.onreadystatechange = () =>
-            if !complete && (!this.readyState || this.readyState is "loaded" || this.readyState is "complete")
+            if !complete && (!script.readyState || script.readyState is "loaded" || script.readyState is "complete")
               complete = true
               script.onload = script.onreadystatechange = null
               @debugMessage 'connect to faye after script loaded'
