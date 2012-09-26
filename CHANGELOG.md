@@ -1,5 +1,9 @@
 # d'Anthès
 
+## 1.0.3 (September 26 2012)
+
+* Fix IE support
+
 ## 1.0.2 (September 7 2012)
 
 * Subscription callback through sign call
