@@ -7,7 +7,7 @@ Gem::Specification.new do |s|
   s.platform    = Gem::Platform::RUBY
   s.author      = ["Alexander Simonov"]
   s.email       = ["alex@simonov.me"]
-  s.homepage    = "http://github.com/phenomena/danthes"
+  s.homepage    = "http://github.com/simonoff/danthes"
   s.summary     = "Private pub/sub messaging through Faye."
   s.description = "Private pub/sub messaging in Rails through Faye. More Faye features supported. Based on PrivatePub."
   s.files         = `git ls-files`.split($\)

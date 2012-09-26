@@ -1,12 +1,12 @@
-# d'Anthès [![Build Status](https://secure.travis-ci.org/phenomena/danthes.png?branch=master)](http://travis-ci.org/phenomena/danthes)
+# d'Anthès [![Build Status](https://secure.travis-ci.org/simonoff/danthes.png?branch=master)](http://travis-ci.org/simonoff/danthes)
 
 d'Anthès is a Ruby gem for use with Rails to publish and subscribe to messages through [Faye](http://faye.jcoglan.com/). It allows you to easily provide real-time updates through an open socket without tying up a Rails process. All channels are private so users can only listen to events you subscribe them to. Based on PrivatePub gem.
 
 ## Docs
 
-[Ruby](http://rubydoc.info/github/phenomena/danthes/frames)
+[Ruby](http://rubydoc.info/github/simonoff/danthes/frames)
 
-[CoffeeScript](https://github.com/phenomena/danthes/wiki/CoffeeScript-documentation)
+[CoffeeScript](https://github.com/simonoff/danthes/wiki/CoffeeScript-documentation)
 
 ## Setup
 
@@ -146,7 +146,7 @@ The `publish_to` method will send a post request to the Faye server (using `Net:
 
 ## Development & Feedback
 
-Questions or comments? Please use the [issue tracker](https://github.com/phenomena/danthes/issues). Tests can be run with `bundle` and `rake` commands.
+Questions or comments? Please use the [issue tracker](https://github.com/simonoff/danthes/issues). Tests can be run with `bundle` and `rake` commands.
 
 ## TODO
 
