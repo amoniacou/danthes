@@ -106,7 +106,6 @@ window.Danthes = class Danthes
       if subscription?
         @subscriptions[channel]['sub'] = subscription
         subscription.callback =>
-          console.log options['connect']
           options['connect']?(subscription)
           @debugMessage "subscription for #{channel} is active now"
         subscription.errback (error) =>
@@ -150,9 +149,10 @@ window.Danthes = class Danthes
   # @param [String] Channel name
   @unsubscribe: (channel) ->
     @debugMessage "unsubscribing from #{channel}"
-    if @subscriptions[channel]
+    if @subscriptions[channel] and @subscriptions[channel]['activated']
       @subscriptions[channel]['sub'].cancel()
-      delete @subscriptions[channel]
+      delete @subscriptions[channel]['activated']
+      delete @subscriptions[channel]['sub']
   
   # Unsubscribe from all channels 
   @unsubscribeAll: ->
