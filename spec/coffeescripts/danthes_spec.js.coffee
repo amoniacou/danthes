@@ -85,6 +85,7 @@ describe "Danthes", ->
   it "adds a signed channel to subscribe later", ->
     pub.fayeClient = 'string'
     [faye, options] = signToChannel('somechannel')
+    expect(pub.subscriptions.somechannel.activated).toBeUndefined()
     expect(pub.subscriptions.somechannel).toBeDefined()
     expect(pub.subscriptions.somechannel.opts.signature).toEqual('1234567890')
     expect(pub.subscriptions.somechannel.opts.timestamp).toEqual(1234567890)
