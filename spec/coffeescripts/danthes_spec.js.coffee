@@ -82,6 +82,13 @@ describe "Danthes", ->
     expect(pub.server).toEqual("server")
     expect(pub.subscriptions.somechannel.opts).toEqual(timestamp: options['timestamp'], signature: options['signature'])
 
+  it "adds a signed channel to subscribe later", ->
+    pub.fayeClient = 'string'
+    [faye, options] = signToChannel('somechannel')
+    expect(pub.subscriptions.somechannel).toBeDefined()
+    expect(pub.subscriptions.somechannel.opts.signature).toEqual('1234567890')
+    expect(pub.subscriptions.somechannel.opts.timestamp).toEqual(1234567890)
+
   it "connects to faye server, adds extension, and executes callbacks", ->
     callback = jasmine.createSpy()
     client = {addExtension: jasmine.createSpy()}
