@@ -98,6 +98,8 @@ window.Danthes = class Danthes
         signature: options['signature']
         timestamp: options['timestamp']     
 
+  # Activating channel subscription
+  
   @activateChannel: (channel, options = {}) ->
     return true if @subscriptions[channel]['activated']
     @subscriptions[channel]['activated'] = true
