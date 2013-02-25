@@ -1,6 +1,7 @@
 require 'rubygems'
 require 'rake'
 require 'rspec/core/rake_task'
+require 'yaml'
 require 'jasmine'
 require 'coffee-script'
 load 'jasmine/tasks/jasmine.rake'

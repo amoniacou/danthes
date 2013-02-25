@@ -10,16 +10,18 @@
 #     channel: 'somechannel'
 #     signature: 'dc1c71d3e959ebb6f49aa6af0c86304a0740088d'
 #     timestamp: 1302306682972
-#     callback: (data) ->
-#       console.log(data)
+#     connect: (subscription) ->
+#       console.log(subscription)
+#     error: (subscription, error) ->
+#       console.log("error: #{error}")
 
 window.Danthes = class Danthes
-  
-  @debug: false    
+
+  @debug: false
 
   @debugMessage: (message) ->
     console.log(message) if @debug
-  
+
   # Reset all
   @reset: ->
     @connecting = false
@@ -58,7 +60,7 @@ window.Danthes = class Danthes
       else
         @debugMessage 'faye already inited'
         @connectToFaye()
-  
+
   # Faye extension for incoming and outgoing messages
   @fayeExtension:
     incoming : (message, callback) =>
@@ -73,7 +75,7 @@ window.Danthes = class Danthes
         message.ext.danthes_signature = subscription.signature
         message.ext.danthes_timestamp = subscription.timestamp
       callback(message)
-  
+
   # Initialize Faye client
   @connectToFaye: ->
     if @server && Faye?
@@ -96,13 +98,16 @@ window.Danthes = class Danthes
       @subscriptions[channel]['callback'] = options['callback'] if options['callback']?
       @subscriptions[channel]['opts'] =
         signature: options['signature']
-        timestamp: options['timestamp']     
+        timestamp: options['timestamp']
+      # If we have 'connect' or 'error' option then force channel activation
+      if options['connect']? || options['error']?
+        @activateChannel channel, options
 
   # Activating channel subscription
-  
+  # @param channel [String] channel name
+  # @param options [Object] subscription callback options
   @activateChannel: (channel, options = {}) ->
     return true if @subscriptions[channel]['activated']
-    @subscriptions[channel]['activated'] = true
     @faye (faye) =>
       subscription = faye.subscribe channel, (message) => @handleResponse(message)
       if subscription?
@@ -113,7 +118,8 @@ window.Danthes = class Danthes
         subscription.errback (error) =>
           options['error']?(subscription, error)
           @debugMessage "error for #{channel}: #{error.message}"
-  
+        @subscriptions[channel]['activated'] = true
+
   # Handle response from Faye
   # @param [Object] message from Faye
   @handleResponse: (message) ->
@@ -123,7 +129,7 @@ window.Danthes = class Danthes
     return unless @subscriptions[channel]?
     if callback = @subscriptions[channel]['callback']
       callback(message.data, channel)
-  
+
   # Disable transports
   # @param [String] name of transport
   @disableTransport: (transport) ->
@@ -132,31 +138,36 @@ window.Danthes = class Danthes
       @disables.push(transport)
       @debugMessage "#{transport} faye transport will be disabled"
     true
-  
+
   # Subscribe to channel with callback
   # @param channel [String] Channel name
   # @param callback [Function] Callback function
-  @subscribe: (channel, callback, options) ->
+  # @param options [Object] subscription callbacks options
+  @subscribe: (channel, callback, options = {}) ->
     @debugMessage "subscribing to #{channel}"
     if @subscriptions[channel]?
-      @activateChannel channel, options
+      @activateChannel(channel, options)
       # Changing callback on every call
       @subscriptions[channel]['callback'] = callback
     else
       @debugMessage "Cannot subscribe on channel '#{channel}'. You need sign to channel first."
       return false
     true
-  
+
   # Unsubscribe from channel
   # @param [String] Channel name
-  @unsubscribe: (channel) ->
+  # @param [Boolean] Full unsubscribe
+  @unsubscribe: (channel, fullUnsubscribe = false) ->
     @debugMessage "unsubscribing from #{channel}"
-    if @subscriptions[channel] and @subscriptions[channel]['activated']
+    if @subscriptions[channel] && @subscriptions[channel]['activated']
       @subscriptions[channel]['sub'].cancel()
-      delete @subscriptions[channel]['activated']
-      delete @subscriptions[channel]['sub']
-  
-  # Unsubscribe from all channels 
+      if fullUnsubscribe
+        delete @subscriptions[channel]
+      else
+        delete @subscriptions[channel]['activated']
+        delete @subscriptions[channel]['sub']
+
+  # Unsubscribe from all channels
   @unsubscribeAll: ->
     @unsubscribe(channel) for channel, _ of @subscriptions
 

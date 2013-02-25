@@ -1,22 +1,25 @@
 describe "Danthes", ->
   window.Faye = undefined
   pub = undefined
-  
-  signToChannel = (channel) ->
-    faye = {subscribe: jasmine.createSpy()}
+
+  signToChannel = (channel, addOptions = {}) ->
+    sub = {callback: jasmine.createSpy(), errback: jasmine.createSpy()}
+    faye = {subscribe: jasmine.createSpy().andReturn(sub)}
     spyOn(pub, 'faye').andCallFake (callback) ->
       callback(faye)
     options = {server: "server", channel: "#{channel}", timestamp: 1234567890, signature: '1234567890'}
+    options['connect'] = addOptions['connect'] if addOptions['connect']?
+    options['error'] = addOptions['error'] if addOptions['error']?
     pub.sign(options)
     return [faye, options]
-  
+
   beforeEach ->
     pub = window.Danthes
     pub.reset()
     script = document.getElementById('faye-connection-script')
     if script?
       script.parentNode.removeChild(script)
-  
+
   it "not adds a subscription callback without signing", ->
     expect(pub.subscribe("hello", "callback")).toBe(false)
     expect(pub.subscriptions).toEqual({})
@@ -73,22 +76,35 @@ describe "Danthes", ->
     expect(script).toBeDefined()
     expect(script.type).toEqual("text/javascript")
     expect(script.src).toMatch("path/to/faye/client.js")
-  
+
+  it "adds a signed channel to subscribe later", ->
+    pub.fayeClient = 'string'
+    [faye, options] = signToChannel('somechannel')
+    expect(faye.subscribe).not.toHaveBeenCalled()
+    expect(pub.subscriptions.somechannel.activated).toBeUndefined()
+    expect(pub.subscriptions.somechannel).toBeDefined()
+    expect(pub.subscriptions.somechannel.opts.signature).toEqual('1234567890')
+    expect(pub.subscriptions.somechannel.opts.timestamp).toEqual(1234567890)
+    expect(pub.subscriptions.somechannel.activated).toBeUndefined()
+
+  it "adds a faye subscription with response handler when sign with connect option", ->
+    pub.fayeClient = 'string'
+    [faye, options] = signToChannel('somechannel', {'connect': jasmine.createSpy()})
+    expect(faye.subscribe).toHaveBeenCalled()
+    expect(pub.subscriptions.somechannel.activated).toBeDefined()
+
+  it "adds a faye subscription with response handler when sign with error option", ->
+    pub.fayeClient = 'string'
+    [faye, options] = signToChannel('somechannel', {'error': jasmine.createSpy()})
+    expect(faye.subscribe).toHaveBeenCalled()
+    expect(pub.subscriptions.somechannel.activated).toBeDefined()
+
   it "adds a faye subscription with response handler when first time subscribing", ->
     pub.fayeClient = 'string'
     [faye, options] = signToChannel('somechannel')
     pub.subscribe('somechannel', ->)
     expect(faye.subscribe).toHaveBeenCalled()
-    expect(pub.server).toEqual("server")
-    expect(pub.subscriptions.somechannel.opts).toEqual(timestamp: options['timestamp'], signature: options['signature'])
-
-  it "adds a signed channel to subscribe later", ->
-    pub.fayeClient = 'string'
-    [faye, options] = signToChannel('somechannel')
-    expect(pub.subscriptions.somechannel.activated).toBeUndefined()
-    expect(pub.subscriptions.somechannel).toBeDefined()
-    expect(pub.subscriptions.somechannel.opts.signature).toEqual('1234567890')
-    expect(pub.subscriptions.somechannel.opts.timestamp).toEqual(1234567890)
+    expect(pub.subscriptions.somechannel.activated).toBeDefined()
 
   it "connects to faye server, adds extension, and executes callbacks", ->
     callback = jasmine.createSpy()
@@ -104,20 +120,20 @@ describe "Danthes", ->
     expect(pub.fayeClient).toEqual(client)
     expect(client.addExtension).toHaveBeenCalledWith(pub.fayeExtension)
     expect(callback).toHaveBeenCalledWith(client)
-    
+
   it "adds transport to disables", ->
     expect(pub.disableTransport('websocket')).toBeTruthy()
     expect(pub.disables).toEqual(['websocket'])
-  
+
   it "adds transport to disables only one time", ->
     pub.disableTransport('websocket')
     pub.disableTransport('websocket')
     expect(pub.disables).toEqual(['websocket'])
-    
+
   it "returns false if not accepted transport wants to be disabled", ->
     expect(pub.disableTransport('websocket123')).toBeUndefined()
     expect(pub.disables).toEqual([])
-    
+
   it "connects to faye server, and executes disable once", ->
     callback = jasmine.createSpy()
     client = {addExtension: jasmine.createSpy(), disable: jasmine.createSpy()}
@@ -127,7 +143,7 @@ describe "Danthes", ->
     pub.disableTransport('websocket')
     pub.connectToFaye()
     expect(client.disable).toHaveBeenCalledWith('websocket')
-    
+
   it "connects to faye server, and executes disable once", ->
     callback = jasmine.createSpy()
     client = {addExtension: jasmine.createSpy(), disable: jasmine.createSpy()}
@@ -139,7 +155,7 @@ describe "Danthes", ->
     pub.connectToFaye()
     expect(client.disable).toHaveBeenCalledWith('websocket')
     expect(client.disable).toHaveBeenCalledWith('long-polling')
-    
+
   it "adds subscription faye object into channel object", ->
     sub = {callback: jasmine.createSpy(), errback: jasmine.createSpy()}
     pub.fayeClient = {subscribe: jasmine.createSpy().andReturn(sub)}
@@ -149,10 +165,10 @@ describe "Danthes", ->
     expect(sub.callback).toHaveBeenCalled()
     expect(sub.errback).toHaveBeenCalled()
     expect(pub.subscriptions.somechannel.sub).toEqual(sub)
-    
+
   it "adds subscription faye object into channel object and call connect callback after connection", ->
-    sub = 
-      callback: (f) -> 
+    sub =
+      callback: (f) ->
         f()
       errback: jasmine.createSpy()
     pub.fayeClient = {subscribe: jasmine.createSpy().andReturn(sub)}
@@ -161,11 +177,11 @@ describe "Danthes", ->
     connectSpy = jasmine.createSpy()
     pub.subscribe('somechannel', jasmine.createSpy(), connect: connectSpy)
     expect(connectSpy).toHaveBeenCalledWith(sub)
-  
+
   it "adds subscription faye object into channel object and call error callback after connection", ->
-    sub = 
+    sub =
       callback: jasmine.createSpy()
-      errback: (f) -> 
+      errback: (f) ->
         f('error')
     pub.fayeClient = {subscribe: jasmine.createSpy().andReturn(sub)}
     erroSpy = jasmine.createSpy()
@@ -173,7 +189,7 @@ describe "Danthes", ->
     pub.sign(options)
     pub.subscribe("somechannel", jasmine.createSpy(), error: erroSpy)
     expect(erroSpy).toHaveBeenCalledWith(sub, 'error')
-        
+
   it "removes subscription to the channel", ->
     sub = {callback: jasmine.createSpy(), errback: jasmine.createSpy(), cancel: jasmine.createSpy()}
     pub.fayeClient = {subscribe: jasmine.createSpy().andReturn(sub)}
@@ -183,7 +199,7 @@ describe "Danthes", ->
     pub.unsubscribe('somechannel')
     expect(sub.cancel).toHaveBeenCalled()
     expect(pub.subscriptions.somechannel.sub).toBeUndefined()
-    
+
   it "removes all subscription to the channels", ->
     sub = {callback: jasmine.createSpy(), errback: jasmine.createSpy(), cancel: jasmine.createSpy()}
     pub.fayeClient = {subscribe: jasmine.createSpy().andReturn(sub)}

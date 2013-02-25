@@ -1,5 +1,9 @@
 # d'Anthès
 
+## 1.0.4 (February 25 2013)
+
+* Added possibility to activate Faye's subscription later on subscribe call
+
 ## 1.0.3 (September 26 2012)
 
 * Fix IE support
