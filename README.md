@@ -1,4 +1,4 @@
-# d'Anthès [![Build Status](https://secure.travis-ci.org/phenomena/danthes.png?branch=master)](http://travis-ci.org/phenomena/danthes)
+# d'Anthès [![Build Status](https://secure.travis-ci.org/phenomena/danthes.png?branch=master)](http://travis-ci.org/phenomena/danthes)[![Code Climate](https://codeclimate.com/github/phenomena/danthes.png)](https://codeclimate.com/github/phenomena/danthes)
 
 d'Anthès is a Ruby gem for use with Rails to publish and subscribe to messages through [Faye](http://faye.jcoglan.com/). It allows you to easily provide real-time updates through an open socket without tying up a Rails process. All channels are private so users can only listen to events you subscribe them to. Based on PrivatePub gem.
 
