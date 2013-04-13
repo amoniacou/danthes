@@ -9,3 +9,4 @@ gem 'jasmine', '1.3.0'
 gem 'rspec'
 gem 'rspec-mocks'
 gem 'webmock'
+gem 'coveralls', require: false

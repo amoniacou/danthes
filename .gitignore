@@ -5,3 +5,4 @@ Gemfile.lock
 .bundle
 app/assets/javascripts/compiled
 spec/coffeescripts/compiled
+coverage
