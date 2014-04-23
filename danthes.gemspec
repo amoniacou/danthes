@@ -13,5 +13,6 @@ Gem::Specification.new do |s|
   s.files         = `git ls-files`.split($\)
   s.test_files    = s.files.grep(%r{^(test|spec|features)/})
   s.require_paths = ["lib"]
-  s.add_dependency 'faye', '>= 0.8.9'
+  s.add_dependency 'faye',      '>= 0.8.9'
+  s.add_dependency 'yajl-ruby', '~> 1.2.0'
 end
