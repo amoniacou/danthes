@@ -11,7 +11,7 @@ RSpec::Core::RakeTask.new do |t|
   t.verbose = false
 end
 
-task :default => [:compile_js, :spec, "jasmine:ci"]
+task :default => [:spec, :compile_js, "jasmine:ci"]
 
 def compile_coffee_script(file, path)
   source = File.read File.expand_path("#{path}/#{file}.coffee", __FILE__)
@@ -26,5 +26,5 @@ end
 desc "Compile coffeescript"
 task :compile_js do
   compile_coffee_script('danthes.js', '../app/assets/javascripts')
-  compile_coffee_script('danthes_spec.js', '../spec/coffeescripts')
+  compile_coffee_script('danthesSpec.js', '../spec/coffeescripts')
 end

@@ -4,8 +4,8 @@ describe "Danthes", ->
 
   signToChannel = (channel, addOptions = {}) ->
     sub = {callback: jasmine.createSpy(), errback: jasmine.createSpy()}
-    faye = {subscribe: jasmine.createSpy().andReturn(sub)}
-    spyOn(pub, 'faye').andCallFake (callback) ->
+    faye = {subscribe: jasmine.createSpy().and.returnValue(sub)}
+    spyOn(pub, 'faye').and.callFake (callback) ->
       callback(faye)
     options = {server: "server", channel: "#{channel}", timestamp: 1234567890, signature: '1234567890'}
     options['connect'] = addOptions['connect'] if addOptions['connect']?
@@ -158,7 +158,7 @@ describe "Danthes", ->
 
   it "adds subscription faye object into channel object", ->
     sub = {callback: jasmine.createSpy(), errback: jasmine.createSpy()}
-    pub.fayeClient = {subscribe: jasmine.createSpy().andReturn(sub)}
+    pub.fayeClient = {subscribe: jasmine.createSpy().and.returnValue(sub)}
     options = {server: "server", channel: 'somechannel'}
     pub.sign(options)
     pub.subscribe("somechannel", jasmine.createSpy())
@@ -171,7 +171,7 @@ describe "Danthes", ->
       callback: (f) ->
         f()
       errback: jasmine.createSpy()
-    pub.fayeClient = {subscribe: jasmine.createSpy().andReturn(sub)}
+    pub.fayeClient = {subscribe: jasmine.createSpy().and.returnValue(sub)}
     options = {server: "server", channel: 'somechannel'}
     pub.sign(options)
     connectSpy = jasmine.createSpy()
@@ -183,7 +183,7 @@ describe "Danthes", ->
       callback: jasmine.createSpy()
       errback: (f) ->
         f('error')
-    pub.fayeClient = {subscribe: jasmine.createSpy().andReturn(sub)}
+    pub.fayeClient = {subscribe: jasmine.createSpy().and.returnValue(sub)}
     erroSpy = jasmine.createSpy()
     options = {server: "server", channel: 'somechannel'}
     pub.sign(options)
@@ -192,7 +192,7 @@ describe "Danthes", ->
 
   it "removes subscription to the channel", ->
     sub = {callback: jasmine.createSpy(), errback: jasmine.createSpy(), cancel: jasmine.createSpy()}
-    pub.fayeClient = {subscribe: jasmine.createSpy().andReturn(sub)}
+    pub.fayeClient = {subscribe: jasmine.createSpy().and.returnValue(sub)}
     options = {server: "server", channel: 'somechannel'}
     pub.sign(options)
     pub.subscribe('somechannel', jasmine.createSpy())
@@ -202,7 +202,7 @@ describe "Danthes", ->
 
   it "removes all subscription to the channels", ->
     sub = {callback: jasmine.createSpy(), errback: jasmine.createSpy(), cancel: jasmine.createSpy()}
-    pub.fayeClient = {subscribe: jasmine.createSpy().andReturn(sub)}
+    pub.fayeClient = {subscribe: jasmine.createSpy().and.returnValue(sub)}
     options = {server: "server", channel: 'somechannel'}
     pub.sign(options)
     pub.subscribe "somechannel", jasmine.createSpy()

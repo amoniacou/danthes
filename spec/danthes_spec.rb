@@ -17,7 +17,7 @@ describe Danthes do
 
   it "defaults subscription timestamp to current time in milliseconds" do
     time = Time.now
-    Time.stub!(:now).and_return(time)
+    Time.stub(:now).and_return(time)
     Danthes.subscription[:timestamp].should eq((time.to_f * 1000).round)
   end
 
@@ -130,7 +130,7 @@ describe Danthes do
   it "it should use HTTPS if the server URL says so" do
     Danthes.config[:server] = "https://localhost"
     Danthes.config[:mount] = '/faye/path'
-    http = mock(:http).as_null_object
+    http = double(:http).as_null_object
 
     Net::HTTP.should_receive(:new).and_return(http)
     http.should_receive(:use_ssl=).with(true)
@@ -140,7 +140,7 @@ describe Danthes do
 
   it "it should not use HTTPS if the server URL says not to" do
     Danthes.config[:server] = "http://localhost"
-    http = mock(:http).as_null_object
+    http = double(:http).as_null_object
 
     Net::HTTP.should_receive(:new).and_return(http)
     http.should_receive(:use_ssl=).with(false)

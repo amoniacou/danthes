@@ -4,3 +4,6 @@ src_files:
   - danthes.js
 
 spec_dir: spec/coffeescripts/compiled
+
+spec_files:
+  - danthesSpec.js
