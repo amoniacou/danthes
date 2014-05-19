@@ -35,7 +35,7 @@ module Danthes
     
     # Loads the configuration from a given YAML file
     def load_config(filename)
-      yaml = ::YAML.load_file(filename)[env]
+      yaml = ::YAML.load(ERB.new(File.read(filename)).result)[env]
       raise ArgumentError, "The #{environment} environment does not exist in #{filename}" if yaml.nil?
       (yaml.keys - ACCEPTED_KEYS).each {|k| yaml.delete(k)}
       yaml.each {|k, v| config[k.to_sym] = v}

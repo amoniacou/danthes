@@ -30,6 +30,13 @@ describe Danthes do
     config[:adapter].should eq('thin')
   end
 
+  it "loads configuration file with erb via load_config" do
+    ENV['DANTHES_SERVER'] = "http://example.com"
+    Danthes.env = 'production'
+    Danthes.load_config("spec/fixtures/danthes_with_erb.yml")
+    config[:server].should eq("http://example.com")
+  end
+
   context "when redis config exists" do
     before do
       Danthes.env = 'test'
