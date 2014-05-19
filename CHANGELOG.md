@@ -1,5 +1,9 @@
 # d'Anthès
 
+## 1.0.5 (May 19 2014)
+
+* Added ERB support in configuration files
+
 ## 1.0.4 (February 25 2013)
 
 * Added possibility to activate Faye's subscription later on subscribe call
