@@ -4,6 +4,7 @@ require 'rspec/core/rake_task'
 require 'yaml'
 require 'jasmine'
 require 'coffee-script'
+require 'bundler/gem_tasks'
 load 'jasmine/tasks/jasmine.rake'
 
 desc "Run RSpec"
