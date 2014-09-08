@@ -6,5 +6,5 @@ Bundler.require(:default)
 require 'coveralls'
 Coveralls.wear!
 require 'webmock/rspec'
-RSpec.configure do |config|
+RSpec.configure do |_config|
 end

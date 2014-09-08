@@ -13,8 +13,8 @@ module Danthes
     # some JavaScript calling Danthes.sign with the subscription
     # options.
     def subscribe_to(channel)
-      subscription = Danthes.subscription(:channel => channel)
-      content_tag "script", :type => "text/javascript" do
+      subscription = Danthes.subscription(channel: channel)
+      content_tag 'script', type: 'text/javascript' do
         raw("if (typeof Danthes != 'undefined') { Danthes.sign(#{subscription.to_json}) }")
       end
     end
