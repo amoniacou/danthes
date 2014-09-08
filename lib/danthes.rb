@@ -2,9 +2,9 @@ require 'digest/sha1'
 require 'net/http'
 require 'net/https'
 require 'yajl/json_gem'
+require 'erb'
 
 require 'danthes/faye_extension'
-require 'danthes/engine' if defined? ::Rails
 
 module Danthes
   class Error < StandardError; end
@@ -35,7 +35,7 @@ module Danthes
 
     # Loads the configuration from a given YAML file
     def load_config(filename)
-      yaml = ::YAML.load(ERB.new(File.read(filename)).result)[env]
+      yaml = ::YAML.load(::ERB.new(::File.read(filename)).result)[env]
       fail ArgumentError, "The #{environment} environment does not exist in #{filename}" if yaml.nil?
       yaml.each do |key, val|
         config[key.to_sym] = val if ACCEPTED_KEYS.include?(key)
@@ -115,3 +115,5 @@ module Danthes
 
   startup
 end
+
+require 'danthes/engine' if defined? ::Rails
