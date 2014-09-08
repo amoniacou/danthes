@@ -6,3 +6,4 @@ Gemfile.lock
 app/assets/javascripts/compiled
 spec/coffeescripts/compiled
 coverage
+.idea
