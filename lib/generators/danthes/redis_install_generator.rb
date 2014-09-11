@@ -1,4 +1,4 @@
-require 'generators/danthes'
+require 'generators/danthes_generator'
 
 module Danthes
   module Generators
