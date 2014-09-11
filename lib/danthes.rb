@@ -29,14 +29,14 @@ module Danthes
       @env = if defined? ::Rails
                ::Rails.env
              else
-               ENV['RAILS_ENV'] || 'development'
+               ENV['RAILS_ENV'] || ENV['RACK_ENV'] || 'development'
              end
     end
 
     # Loads the configuration from a given YAML file
     def load_config(filename)
       yaml = ::YAML.load(::ERB.new(::File.read(filename)).result)[env]
-      fail ArgumentError, "The #{environment} environment does not exist in #{filename}" if yaml.nil?
+      fail ArgumentError, "The #{env} environment does not exist in #{filename}" if yaml.nil?
       yaml.each do |key, val|
         config[key.to_sym] = val if ACCEPTED_KEYS.include?(key)
       end
