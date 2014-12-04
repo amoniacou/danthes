@@ -45,7 +45,7 @@ module Danthes
     # Loads the options from a given YAML file
     def load_redis_config(filename)
       require 'faye/redis'
-      yaml = YAML.load_file(filename)[env]
+      yaml = ::YAML.load(::ERB.new(::File.read(filename)).result)[env]
       # default redis options
       options = { type: Faye::Redis, host: 'localhost', port: 6379 }
       yaml.each do |key, val|
