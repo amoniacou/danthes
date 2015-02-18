@@ -1,6 +1,8 @@
 rvm:
   - 2.0.0
   - 2.1.2
+  - 2.2.0
+  - rbx-2
 bundler_args: --without development
 before_script:
   - "export DISPLAY=:99.0"
