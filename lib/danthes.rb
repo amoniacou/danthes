@@ -109,7 +109,11 @@ module Danthes
 
     # Returns the Faye Rack application.
     def faye_app
-      ::Faye::RackAdapter.new(config)
+      rack_config = {}
+      [:engine, :mount, :ping, :timeout, :extensions, :websocket_extensions ].each do |k|
+        rack_config[k] = config[k] if config[k]
+      end
+      ::Faye::RackAdapter.new(rack_config)
     end
   end
 

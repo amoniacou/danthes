@@ -39,7 +39,8 @@ describe Danthes do
 
   context 'when redis config exists' do
     before do
-      Danthes.env = 'test'
+      Danthes.env = 'production'
+      Danthes.load_config('spec/fixtures/danthes.yml')
       Danthes.load_redis_config('spec/fixtures/danthes_redis.yml')
     end
 
@@ -168,6 +169,7 @@ describe Danthes do
   end
 
   it 'has a Faye rack app instance' do
+    Danthes.load_config('spec/fixtures/danthes.yml')
     expect(Danthes.faye_app).to be_kind_of(Faye::RackAdapter)
   end
 
