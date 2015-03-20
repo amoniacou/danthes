@@ -169,6 +169,7 @@ describe Danthes do
   end
 
   it 'has a Faye rack app instance' do
+    Danthes.env = 'production'
     Danthes.load_config('spec/fixtures/danthes.yml')
     expect(Danthes.faye_app).to be_kind_of(Faye::RackAdapter)
   end

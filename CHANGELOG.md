@@ -1,5 +1,16 @@
 # d'Anthès
 
+## 2.0.1 (March 20 2015)
+
+* Fix issue with websocket-driver >= 0.5.1
+
+## 2.0.0 (February 18 2015)
+
+* Added ERB support in redis configuration file
+* Fix generators for supporting only Rails 4.x
+* Fix config loading in Rails 4.x
+* Drop support of Rails 3.x
+
 ## 1.0.5 (May 19 2014)
 
 * Added ERB support in configuration files
