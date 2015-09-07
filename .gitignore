@@ -1,5 +1,6 @@
 *.swp
 **/*.swp
+**/*.log
 *.gem
 Gemfile.lock
 .bundle

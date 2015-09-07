@@ -26,4 +26,5 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'webmock'
   s.add_development_dependency 'coveralls'
   s.add_development_dependency 'therubyracer'
+  s.add_development_dependency 'rails'
 end
