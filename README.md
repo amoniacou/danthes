@@ -34,6 +34,7 @@ rackup danthes.ru -s thin -E production
 //= require danthes
 ```
 
+**NOTE**: On your local machine `secret_token` must be equal for all environments because danthes process working only in production mode.
 
 It's not necessary to include faye's connect.js since that will be handled automatically for you.
 
