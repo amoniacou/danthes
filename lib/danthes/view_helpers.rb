@@ -15,7 +15,7 @@ module Danthes
     def subscribe_to(channel, opts = {})
       js_tag = opts.delete(:include_js_tag){ true }
       subscription = Danthes.subscription(channel: channel)
-      content = raw("if (typeof Danthes != 'undefined') { Danthes.sign(#{subscription.to_json}) }")
+      content = raw("if (typeof Danthes != 'undefined') { Danthes.sign(#{subscription.to_json}); Danthes.subscribe('#{channel}'); }")
       js_tag ? content_tag('script', content, type: 'text/javascript') : content
     end
   end
