@@ -15,7 +15,7 @@ Gem::Specification.new do |s|
   s.require_paths = ['lib']
   s.add_dependency 'faye',      '>= 1.0.1'
   s.add_dependency 'faye-redis'
-  s.add_dependency 'yajl-ruby', '~> 1.2.0'
+  s.add_dependency 'yajl-ruby', '>= 1.2.0'
 
   s.add_development_dependency 'rake'
   s.add_development_dependency 'guard'
